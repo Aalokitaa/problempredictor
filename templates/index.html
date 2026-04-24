@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KACHUA - We're there for you ;)</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><ellipse cx='50' cy='50' rx='40' ry='30' fill='%235a8a5a'/></svg>">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+</head>
+<body class="cursor-interactive">
+    <div id="three-bg"></div>
+    <div class="vignette"></div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    
+    <div class="progress-container" id="main-progress-container" style="display: none;">
+        <div class="progress-fill" id="main-progress"></div>
+    </div>
+    
+    <div class="xp-counter" id="xp-counter" style="display: none;">
+        Points earned: <span id="xp-value">0</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar" id="main-nav">
+        <a href="#" onclick="showSection('hero')">
+            <img src="{{ url_for('static', filename='assets/kachua_logo.png') }}" width="40" alt="Kachua Logo">
+        </a>
+        <div class="nav-links">
+            <a href="#" onclick="showSection('hero')">Home</a>
+            <a href="#" onclick="startAssessment()">Assessment</a>
+            <a href="#" onclick="startWellbeing()">Wellbeing Check</a>
+        </div>
+    </nav>
+
+    <!-- SECTION: HERO -->
+    <section id="hero-section" class="hero-section">
+        <img src="{{ url_for('static', filename='assets/kachua_logo.png') }}" id="hero-logo" width="180" style="margin-bottom: 20px; border-radius: 50%; box-shadow: 0 10px 30px rgba(122,184,139,0.2);">
+        <h1 class="hero-title" id="hero-title">KACHUA</h1>
+        <p style="font-style: italic; color: var(--accent-gold); font-size: 1.2rem; margin-bottom: 10px;" id="hero-tagline">"We're there for you ;)"</p>
+        <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 30px; max-width: 600px;" id="hero-subtitle">An AI-powered early intervention system built with empathy</p>
+        
+        <div class="stats-row" style="margin-top: 0; margin-bottom: 40px;">
+            <div class="stat-bubble">5,000+ Students Analyzed</div>
+            <div class="stat-bubble">94% Prediction Accuracy</div>
+            <div class="stat-bubble">Gemini AI Powered</div>
+        </div>
+        
+        <div class="cards-container">
+            <div class="glass-card hero-card card-assessment" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                <div>
+                    <svg width="48" height="48" viewBox="0 0 100 100" style="margin-bottom: 15px;"><circle cx="50" cy="50" r="40" fill="#7AB88B" opacity="0.3"/><path d="M30 50 L45 65 L70 35" stroke="#2C5E5E" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <h3>Student Assessment</h3>
+                    <p>Answer a short set of questions about your academic habits and wellbeing. Kachua will assess your situation and connect you with support.</p>
+                </div>
+                <button class="btn-primary" onclick="startAssessment()" style="margin-top: 30px;">START ASSESSMENT &rarr;</button>
+            </div>
+            <div class="glass-card hero-card card-wellbeing" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                <div>
+                    <svg width="48" height="48" viewBox="0 0 100 100" style="margin-bottom: 15px;"><path d="M50 85 C50 85 20 60 20 35 A15 15 0 0 1 50 30 A15 15 0 0 1 80 35 C80 60 50 85 50 85 Z" fill="none" stroke="#84B4B9" stroke-width="4"/></svg>
+                    <h3 style="color: var(--accent-secondary);">Wellbeing Check</h3>
+                    <p>A deeper look at what may be affecting your focus, energy, and learning. Get a personalized AI-powered support plan.</p>
+                </div>
+                <button class="btn-primary" style="background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary)); margin-top: 30px;" onclick="startWellbeing()">TAKE THE CHECK &rarr;</button>
+            </div>
+        </div>
+        
+        <div class="how-it-works">
+            <div style="background: var(--bg-deep); padding: 10px 20px; border-radius: var(--radius-pill); border: 1px solid var(--border-card); z-index: 1;">Step 1: Answer Honestly</div>
+            <div style="background: var(--bg-deep); padding: 10px 20px; border-radius: var(--radius-pill); border: 1px solid var(--border-card); z-index: 1;">Step 2: Kachua Analyzes</div>
+            <div style="background: var(--bg-deep); padding: 10px 20px; border-radius: var(--radius-pill); border: 1px solid var(--border-card); z-index: 1;">Step 3: Get Your Plan</div>
+        </div>
+
+        <footer style="margin-top: 60px;">
+            Built with care by Aalokita Chibb &middot; Kachua v1.0 &middot; Powered by Gemini AI
+        </footer>
+        
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span style="font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-secondary);">Scroll</span>
+        </div>
+    </section>
+
+    <!-- SECTION: FEATURES SHOWCASE -->
+    <section id="features-section" class="features-section">
+        <div class="features-container">
+            <h2 class="section-heading">Why Kachua?</h2>
+            <div class="features-grid">
+                <div class="feature-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Predictive AI Analytics</h3>
+                    <p>Powered by an advanced Random Forest model, Kachua analyzes 15 key student metrics to accurately predict academic risk before it becomes a problem.</p>
+                </div>
+                <div class="feature-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Holistic Wellbeing</h3>
+                    <p>We look beyond just grades. Our wellbeing check identifies burnout, stress, and lack of support to ensure the student's mind is ready to learn.</p>
+                </div>
+                <div class="feature-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="feature-icon">💡</div>
+                    <h3>Gemini Intelligence</h3>
+                    <p>Kachua utilizes Google's Gemini 1.5 Flash to generate warm, empathetic, and highly personalized advice plans tailored to each specific student.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: ACADEMIC ASSESSMENT FLOW -->
+    <section id="assessment-section" style="display: none; position: relative; width: 100vw; height: 100vh;">
+        <!-- Container for dynamically injected screens -->
+        <div id="assessment-screens-container"></div>
+    </section>
+
+    <!-- SECTION: ACADEMIC RESULT -->
+    <section id="academic-result-section" style="display: none; position: relative; width: 100vw; min-height: 100vh; padding: 100px 20px; display: none; align-items: center; justify-content: center; flex-direction: column;">
+        <h2 style="font-family: var(--font-display); color: var(--accent-gold); font-size: 2.5rem; margin-bottom: 30px;">Your Assessment Results</h2>
+        <div class="glass-card" style="padding: 40px; max-width: 800px; width: 100%; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: center;">
+            <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center;">
+                <div style="position: relative; width: 200px; height: 200px;">
+                    <svg width="200" height="200" viewBox="0 0 100 100" style="transform: rotate(-90deg);">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,220,170,0.1)" stroke-width="6"/>
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent-primary)" stroke-width="6" stroke-dasharray="282.7" id="risk-ring-progress" stroke-dashoffset="282.7" stroke-linecap="round" style="transition: stroke-dashoffset 2s ease-out, stroke 1s;"/>
+                    </svg>
+                    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <span id="risk-score-display" style="font-family: var(--font-display); font-size: 2.5rem; font-weight: bold; color: var(--text-primary);">0%</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Risk Score</span>
+                    </div>
+                </div>
+                <div id="risk-badge-container" style="margin-top: 20px;"></div>
+                <p id="risk-message-display" style="color: var(--text-secondary); text-align: center; margin-top: 15px; max-width: 250px;"></p>
+            </div>
+            <div style="flex: 1; min-width: 300px;">
+                <canvas id="academicRadarChart"></canvas>
+            </div>
+        </div>
+        <div style="margin-top: 40px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <button class="btn-primary" onclick="startWellbeing()">Continue to Wellbeing Check &rarr;</button>
+            <button class="btn-secondary" onclick="generateAcademicOnlyReport()">Get My Full AI Report &rarr;</button>
+        </div>
+    </section>
+
+    <!-- SECTION: WELLBEING FLOW -->
+    <section id="wellbeing-section" style="display: none; position: relative; width: 100vw; height: 100vh;">
+        <div id="wellbeing-screens-container"></div>
+    </section>
+
+    <!-- SECTION: WELLBEING RESULT -->
+    <section id="wellbeing-result-section" style="display: none; padding: 100px 20px 60px; max-width: 900px; margin: 0 auto; flex-direction: column; align-items: center;">
+        <h2 style="font-family: var(--font-display); color: var(--accent-gold); font-size: 2.5rem; margin-bottom: 40px;">Your Kachua Wellbeing Report</h2>
+        
+        <div id="wellbeing-flags-container" style="width: 100%; display: flex; flex-direction: column; gap: 20px;">
+            <!-- Flags injected here -->
+        </div>
+        
+        <div class="glass-card" style="width: 100%; padding: 20px; margin-top: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <label class="toggle-switch" style="vertical-align: middle; margin-right: 15px;">
+                    <input type="checkbox" id="share-teacher-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span style="color: var(--text-primary); font-weight: 500;">Share insights with Teacher HQ</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.8rem; max-width: 400px;">
+                This is not a medical diagnosis. These results are generated by a pattern-matching tool and are meant to help start conversations with qualified professionals. Please speak to a counselor, doctor, or mental health professional for proper assessment.
+            </p>
+        </div>
+        
+        <div style="margin-top: 40px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <button class="btn-secondary" onclick="window.print()">Download My Report</button>
+            <button class="btn-primary" id="btn-get-full-ai-report" onclick="submitWellbeingAndGetAdvice()">Get My Full AI Report &rarr;</button>
+        </div>
+    </section>
+
+    <!-- SECTION: TEACHER HQ -->
+    <section id="teacher-section" style="display: none; padding: 100px 40px 60px; max-width: 1400px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
+            <h1 style="font-family: var(--font-display); color: var(--accent-gold); font-size: 3rem;">Kachua HQ</h1>
+            <div style="font-family: monospace; color: var(--text-secondary); font-size: 1.5rem;" id="hq-clock">00:00:00</div>
+        </div>
+        
+        <!-- Summary Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div class="glass-card" style="padding: 20px; text-align: center;">
+                <h3 id="stat-total" style="font-family: var(--font-display); color: var(--accent-tertiary); font-size: 2.5rem; text-shadow: 0 0 20px rgba(91,127,166,0.5);">0</h3>
+                <p style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">Total Students</p>
+            </div>
+            <div class="glass-card" style="padding: 20px; text-align: center;">
+                <h3 id="stat-atrisk" style="font-family: var(--font-display); color: var(--accent-danger); font-size: 2.5rem; text-shadow: 0 0 20px rgba(176,92,58,0.5);">0</h3>
+                <p style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">At-Risk Count</p>
+            </div>
+            <div class="glass-card" style="padding: 20px; text-align: center;">
+                <h3 id="stat-safe" style="font-family: var(--font-display); color: var(--accent-secondary); font-size: 2.5rem; text-shadow: 0 0 20px rgba(122,158,126,0.5);">0</h3>
+                <p style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">Safe Count</p>
+            </div>
+            <div class="glass-card" style="padding: 20px; text-align: center;">
+                <h3 id="stat-avg" style="font-family: var(--font-display); color: var(--accent-gold); font-size: 2.5rem; text-shadow: 0 0 20px rgba(212,168,71,0.5);">0</h3>
+                <p style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem;">Avg Risk Score</p>
+            </div>
+        </div>
+        
+        <!-- Bulk Upload Section -->
+        <div class="glass-card" style="padding: 30px; margin-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleBulkUpload()">
+                <h3 style="font-family: var(--font-display); color: var(--accent-gold);">Bulk Intelligence Upload</h3>
+                <span id="bulk-toggle-icon" style="color: var(--accent-gold); transition: transform 0.3s;">▼</span>
+            </div>
+            <div id="bulk-upload-content" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                <div style="margin-top: 20px;">
+                    <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" style="margin-bottom: 15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <h4 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 10px;">Drop your student data file here</h4>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Supports CSV, Excel, JSON — up to 10MB</p>
+                        <button class="btn-secondary" style="pointer-events: none;">BROWSE FILES</button>
+                        <input type="file" id="file-input" style="display: none;" accept=".csv, .xlsx, .xls, .json">
+                    </div>
+                    <div id="file-info" style="margin-top: 15px; text-align: center; color: var(--accent-secondary); display: none;">
+                        <span id="file-name"></span> <span id="file-size" style="color: var(--text-muted); font-size: 0.8rem;"></span>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn-primary" id="btn-run-analysis" style="display: none;" onclick="runBulkAnalysis()">RUN ANALYSIS</button>
+                    </div>
+                    
+                    <div id="bulk-loader" style="display: none; text-align: center; margin-top: 40px; padding: 40px;">
+                        <img src="{{ url_for('static', filename='assets/kachua_logo.svg') }}" class="loader-turtle" style="width: 80px; margin-bottom: 20px;">
+                        <div style="display: flex; gap: 15px; margin-top: 20px;">
+                            <a href="/analysis" target="_blank" class="btn-secondary">View Feature Intelligence Detailed</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <button class="pill-btn selected" id="tab-students" onclick="switchHqTab('students')">Student Intelligence</button>
+            <button class="pill-btn" id="tab-wellbeing" onclick="switchHqTab('wellbeing')">Wellbeing Reports</button>
+        </div>
+        
+        <!-- Students Grid -->
+        <div id="hq-students-view" class="dashboard-grid">
+            <!-- Populated via JS -->
+        </div>
+        
+        <!-- Wellbeing Reports View -->
+        <div id="hq-wellbeing-view" style="display: none;">
+            <div class="glass-card" style="padding: 20px; overflow-x: auto;">
+                <table id="wellbeing-reports-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Date</th>
+                            <th>Key Flags</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global UI Elements -->
+    <div id="toast" class="toast"></div>
+    <div id="motes-global"></div>
+    <button class="ambient-toggle" id="globalSoundToggle" onclick="toggleAudio()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> <span id="audio-label">ambient off</span></button>
+    <!-- Audio placeholder: <audio id="ambientAudio" src="/static/assets/ambient.mp3" loop></audio> -->
+
+    <!-- Kachua Mascot (Global fixed) -->
+    <div class="turtle-wrapper" id="global-turtle-wrapper" style="display: none; bottom: 24px; right: 24px; width: 80px;">
+        <img src="{{ url_for('static', filename='assets/kachua_logo.svg') }}" id="global-mascot" style="width:100%;">
+        <div class="speech-bubble" id="global-mascot-speech"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+    <script>
+        // --- 1. GLOBAL STATE & INIT ---
+        let pjs;
+        let kachuaAnim;
+        let academicAnswers = {};
+        let wellbeingAnswers = {};
+        let currentScreen = 0;
+        let totalXp = 0;
+        let academicRiskData = null; // Store result from /api/predict
+        let diagnosticFlags = [];
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init Three.js
+            pjs = ParticlesJS.initParticleBackground({ containerId: 'three-bg', mode: 'ambient' });
+            
+            // GSAP Animations Hero
+            gsap.from('#hero-logo', {y: 30, opacity: 0, duration: 1, ease: "back.out(1.7)"});
+            gsap.from('#hero-title', {y: 30, opacity: 0, duration: 1, ease: "power2.out", delay: 0.2});
+            gsap.from('#hero-tagline', {opacity: 0, duration: 1, delay: 0.5});
+            gsap.from('#hero-subtitle', {opacity: 0, duration: 1, delay: 0.7});
+            gsap.from('.hero-card', {y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power2.out", delay: 0.9});
+            
+            // Dust motes
+            const motesContainer = document.getElementById('motes-global');
+            for(let i=0; i<25; i++) {
+                const mote = document.createElement('div');
+                mote.className = 'dust-mote';
+                mote.style.width = Math.random() * 2 + 2 + 'px';
+                mote.style.height = mote.style.width;
+                mote.style.left = Math.random() * 100 + 'vw';
+                mote.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                mote.style.animationDelay = (Math.random() * 20) + 's';
+                motesContainer.appendChild(mote);
+            }
+            
+            kachuaAnim = new KachuaAnimator(document.getElementById('global-mascot'));
+            kachuaAnim.startBob();
+            
+            // Start HQ clock
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('hq-clock').innerText = now.toLocaleTimeString();
+            }, 1000);
+        });
+
+        // --- 2. KACHUA ANIMATOR CLASS ---
+        class KachuaAnimator {
+            constructor(element) {
+                this.el = element;
+                this.clickCount = 0;
+                this.lastClick = 0;
+                
+                this.el.addEventListener('click', () => this.easterEgg());
+            }
+            startBob() {
+                gsap.to(this.el, {y: -8, duration: 2, ease: "sine.inOut", yoyo: true, repeat: -1});
+            }
+            happySpin() {
+                gsap.to(this.el, {rotation: "+=360", duration: 0.5, ease: "back.out"});
+            }
+            worriedPose() {
+                gsap.set(this.el, {filter: "drop-shadow(0 0 10px rgba(212,168,71,0.5))"});
+                gsap.to(this.el, {y: 5, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1});
+            }
+            runAcross() {
+                const wrapper = this.el.parentElement;
+                const startX = wrapper.getBoundingClientRect().left;
+                gsap.to(wrapper, {x: window.innerWidth + 100 - startX, duration: 1.2, ease: "none", onComplete: () => {
+                    gsap.set(wrapper, {x: -200});
+                    gsap.to(wrapper, {x: 0, duration: 1, delay: 0.5});
+                }});
+            }
+            victoryJump() {
+                gsap.to(this.el, {y: -50, duration: 0.4, ease: "power2.out", yoyo: true, repeat: 1, onComplete: () => this.happySpin()});
+            }
+            showSpeechBubble(text) {
+                const bubble = document.getElementById('global-mascot-speech');
+                bubble.innerText = text;
+                gsap.to(bubble, {opacity: 1, duration: 0.3});
+                setTimeout(() => gsap.to(bubble, {opacity: 0, duration: 0.5}), 4000);
+            }
+            easterEgg() {
+                const now = Date.now();
+                if(now - this.lastClick > 1000) this.clickCount = 0;
+                this.clickCount++;
+                this.lastClick = now;
+                
+                if(this.clickCount >= 5) {
+                    gsap.to(this.el, {rotation: "+=1080", duration: 1.5, ease: "power2.inOut"});
+                    this.showSpeechBubble("Kachua loves you 🐢💚");
+                    this.clickCount = 0;
+                } else {
+                    gsap.to(this.el, {scale: 0.9, duration: 0.1, yoyo: true, repeat: 1});
+                }
+            }
+        }
+
+        // --- 3. NAVIGATION & UI HELPERS ---
+        function showSection(sectionId) {
+            // Hide all
+            document.getElementById('hero-section').style.display = 'none';
+            document.getElementById('assessment-section').style.display = 'none';
+            document.getElementById('academic-result-section').style.display = 'none';
+            document.getElementById('wellbeing-section').style.display = 'none';
+            document.getElementById('wellbeing-result-section').style.display = 'none';
+            document.getElementById('teacher-section').style.display = 'none';
+            
+            document.getElementById('main-nav').style.display = sectionId === 'hero' ? 'flex' : 'none';
+            document.getElementById('main-progress-container').style.display = 'none';
+            document.getElementById('xp-counter').style.display = 'none';
+            
+            const turtle = document.getElementById('global-turtle-wrapper');
+            turtle.style.display = sectionId === 'hero' ? 'none' : 'block';
+            
+            if(sectionId === 'teacher') {
+                turtle.className = 'turtle-wrapper hq-page';
+                pjs = ParticlesJS.initParticleBackground({ containerId: 'three-bg', mode: 'grid' });
+                loadTeacherData();
+            } else if(sectionId === 'assessment' || sectionId === 'wellbeing') {
+                turtle.className = 'turtle-wrapper quest-page';
+                document.getElementById('main-progress-container').style.display = 'block';
+                document.getElementById('xp-counter').style.display = 'block';
+                pjs = ParticlesJS.initParticleBackground({ containerId: 'three-bg', mode: 'sphere' });
+            } else {
+                pjs = ParticlesJS.initParticleBackground({ containerId: 'three-bg', mode: 'ambient' });
+            }
+            
+            document.getElementById(`${sectionId}-section`).style.display = sectionId === 'academic-result' ? 'flex' : 'block';
+            window.scrollTo(0,0);
+        }
+
+        function showToast(msg, type='success') {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.className = `toast ${type}`;
+            gsap.to(t, {y: -20, opacity: 1, duration: 0.3});
+            setTimeout(() => gsap.to(t, {y: 0, opacity: 0, duration: 0.3}), 3000);
+        }
+
+        function addXp(amount) {
+            totalXp += amount;
+            const el = document.getElementById('xp-value');
+            gsap.to(el, {
+                innerHTML: totalXp,
+                duration: 1,
+                snap: { innerHTML: 1 },
+                onUpdate: function() { el.innerHTML = Math.round(el.innerHTML); }
+            });
+            gsap.to(el, {scale: 1.5, color: '#fff', duration: 0.2, yoyo: true, repeat: 1});
+        }
+
+        let audioMuted = true;
+        function toggleAudio() {
+            audioMuted = !audioMuted;
+            document.getElementById('audio-label').innerText = audioMuted ? 'ambient off' : 'ambient on';
+            // if(audio) audio.play/pause
+        }
+
+        // --- 4. DATA DEFINITIONS ---
+        const academicQuestions = [
+            { id: 'age', ch: 'About You', q: 'How old are you?', h: 'Enter your current age', t: 'number', min: 16, max: 25 },
+            { id: 'gender', ch: 'About You', q: 'How do you identify?', h: 'Select the option that feels right for you', t: 'pills', opts: ['Male', 'Female', 'Prefer not to say'] },
+            { id: 'college', ch: 'About You', q: 'Which institution are you currently enrolled in?', h: 'Type the name of your college or university', t: 'text', placeholder: 'e.g. Chandigarh University' },
+            { id: 'address', ch: 'About You', q: 'Where do you currently live?', h: 'This helps us understand your study environment', t: 'pills', opts: ['Urban area', 'Rural area'] },
+            { id: 'g1', ch: 'Your Academics', q: 'What was your score in your most recent major exam or test?', h: 'Enter a score out of 100. Give your best estimate if unsure.', t: 'range', min: 0, max: 100, val: 50 },
+            { id: 'failures', ch: 'Your Academics', q: 'How many courses or subjects have you had to repeat so far?', h: 'Include any failed or dropped courses you had to redo', t: 'stepper', min: 0, max: 5, val: 0 },
+            { id: 'studytime', ch: 'Your Academics', q: 'On average, how many hours per week do you spend studying outside of class?', h: 'Count only active study time, not passive attendance', t: 'range', min: 1, max: 10, val: 3, unit: 'hrs' },
+            { id: 'absences', ch: 'Your Academics', q: 'How many classes or sessions have you missed this semester?', h: 'Be honest — this information is kept private and helps us support you better', t: 'range', min: 0, max: 30, val: 0, dangerColor: true },
+            { id: 'goout', ch: 'Your Habits', q: 'How often do you go out socially — meeting friends, attending events, or spending time outside?', h: 'Rate from 1 (rarely) to 5 (very frequently)', t: 'stars' },
+            { id: 'dalc', ch: 'Your Habits', q: 'How often do you consume alcohol or other substances on weekdays?', h: 'This is completely confidential. Honest answers help us support you better.', t: 'pills', opts: ['1 - Never', '2 - Rarely', '3 - Sometimes', '4 - Often', '5 - Daily'] },
+            { id: 'walc', ch: 'Your Habits', q: 'How often do you consume alcohol or other substances on weekends?', h: 'Again, completely private. No judgment here.', t: 'pills', opts: ['1 - Never', '2 - Rarely', '3 - Sometimes', '4 - Often', '5 - Daily'] },
+            { id: 'freetime', ch: 'Your Habits', q: 'How much unstructured free time do you have in a typical day?', h: 'Free time means time with no obligations — not studying, not working, just free', t: 'range', min: 1, max: 5, val: 3, unit: 'hrs' },
+            { id: 'support', ch: 'Your Support System', q: '', h: 'These last questions help us understand what resources you have access to.', t: 'switches', opts: [
+                {id: 'schoolsup', label: 'Do you receive any academic support from your institution? (tutoring, counseling, academic help programs)'},
+                {id: 'famsup', label: 'Do you have support from your family or those you live with when it comes to your studies?'},
+                {id: 'internet', label: 'Do you have reliable internet access for studying and coursework?'},
+                {id: 'highered', label: 'Is completing higher education one of your main goals?'}
+            ]}
+        ];
+
+        // Simplified Wellbeing questions for token limits, keeping logic intact
+        const wellbeingQuestions = [
+            { id: 'q13', ch: 'How Your Mind Works', q: 'Do you often find your mind wandering even when you are trying to pay attention?', t: 'yesno', flagGrp: 'adhd' },
+            { id: 'q14', ch: 'How Your Mind Works', q: 'Do you frequently lose track of what someone just said, even shortly after they said it?', t: 'yesno', flagGrp: 'adhd' },
+            { id: 'q15', ch: 'How Your Mind Works', q: 'Do you find it genuinely difficult to start tasks, even when you want to get them done?', t: 'yesno', flagGrp: 'adhd' },
+            { id: 'q16', ch: 'How Your Mind Works', q: 'Do you tend to forget instructions or tasks shortly after being told about them?', t: 'yesno', flagGrp: 'adhd' },
+            { id: 'q19', ch: 'How Your Mind Works', q: 'Do you find it easier to understand something when it is explained to you verbally rather than reading it yourself?', t: 'yesno', flagGrp: 'dys' },
+            { id: 'q20', ch: 'How Your Mind Works', q: 'Do you sometimes reverse letters, skip words, or find yourself re-reading the same line repeatedly?', t: 'yesno', flagGrp: 'dys' },
+            { id: 'q25', ch: 'Your Emotional Health', q: 'Do you feel anxious or worried so frequently that it gets in the way of your studies or daily life?', t: 'yesno', flagGrp: 'anx' },
+            { id: 'q26', ch: 'Your Emotional Health', q: 'Do you avoid speaking up in class or group settings because you are afraid of being embarrassed or judged?', t: 'yesno', flagGrp: 'anx' },
+            { id: 'q28', ch: 'Your Emotional Health', q: 'Have you felt persistently sad, empty, or hopeless for more than two weeks?', t: 'yesno', flagGrp: 'dep' },
+            { id: 'q29', ch: 'Your Emotional Health', q: 'Have you lost interest in things you used to enjoy?', t: 'yesno', flagGrp: 'dep' },
+            { id: 'q34', ch: 'Your Sleep', q: 'How many hours of sleep do you usually get on weeknights?', t: 'pills', opts: ['Less than 5 hours', '5 to 6 hours', '6 to 7 hours', '7 to 8 hours', 'More than 8 hours'], flagIf: 'Less than 5 hours', flagGrp: 'slp' },
+            { id: 'q35', ch: 'Your Sleep', q: 'When you wake up, do you generally feel rested or still tired regardless of how long you slept?', t: 'pills', opts: ['I feel rested', 'I still feel tired'], flagIf: 'I still feel tired', flagGrp: 'slp' },
+            { id: 'q48', ch: 'Your Physical Health', q: 'Do you often feel physically exhausted even when you have not done much physical activity?', t: 'yesno', flagGrp: 'fatigue' },
+            { id: 'q50', ch: 'Nutrition', q: 'How many full meals do you eat on a typical day?', t: 'pills', opts: ['None or one', 'Two', 'Three', 'More than three'], flagIf: 'None or one', flagGrp: 'fatigue' },
+            { id: 'q51', ch: 'Nutrition', q: 'Do you often feel dizzy, foggy, or unable to think clearly especially before meals?', t: 'yesno', flagGrp: 'fatigue' },
+            { id: 'q61', ch: 'Your Environment', q: 'Is the place where you live quiet and safe enough for you to study effectively?', t: 'yesno', reverse: true, flagGrp: 'env' },
+            { id: 'q62', ch: 'Your Environment', q: 'Are there significant pressures at home that are affecting your studies?', t: 'yesno', flagGrp: 'env' },
+            { id: 'q69', ch: 'Screen Habits', q: 'Outside of studying, how many hours per day do you typically spend on your phone?', t: 'pills', opts: ['Under 1 hour', '1 to 2 hours', '2 to 4 hours', '4 to 6 hours', 'More than 6 hours'], flagIf: 'More than 6 hours', flagGrp: 'scrn' },
+            { id: 'q70', ch: 'Screen Habits', q: 'Do you find yourself automatically reaching for your phone when you sit down to study?', t: 'yesno', flagGrp: 'scrn' },
+            { id: 'q78', ch: 'How You Are Feeling', q: 'Do you feel burnt out — like you have been running on empty for a long time without a proper break?', t: 'yesno', flagGrp: 'brn' },
+            { id: 'q79', ch: 'How You Are Feeling', q: 'Do you sometimes feel like you do not really belong in your course or college, even if you are keeping up academically?', t: 'yesno', flagGrp: 'imp' },
+            { id: 'q80', ch: 'How You Are Feeling', q: 'Do you sometimes feel like others are more capable than you and that you do not really deserve to be here?', t: 'yesno', flagGrp: 'imp' },
+            { id: 'q83', ch: 'Final Question', q: 'If you had complete freedom of choice, what subject, field, or career would you most want to pursue?', t: 'text', placeholder: 'Tell Kachua what excites you...' }
+        ];
+
+        // --- 5. FLOW LOGIC ---
+        function startAssessment() {
+            showSection('assessment');
+            currentScreen = 0;
+            academicAnswers = {};
+            renderAssessmentScreen();
+        }
+
+        function renderAssessmentScreen() {
+            const container = document.getElementById('assessment-screens-container');
+            container.innerHTML = '';
+            
+            const q = academicQuestions[currentScreen];
+            const pct = (currentScreen / academicQuestions.length) * 100;
+            document.getElementById('main-progress').style.width = `${pct}%`;
+            
+            const screen = document.createElement('div');
+            screen.className = 'quest-screen';
+            
+            let html = `<div class="chapter-label">${q.ch}</div>`;
+            if(q.q) html += `<div class="question-text">${q.q}</div>`;
+            if(q.h) html += `<div class="question-text" style="font-size:1rem; color:var(--text-secondary);">${q.h}</div>`;
+            
+            html += `<div style="margin: 30px 0; width: 100%; display: flex; justify-content: center; flex-direction: column; align-items: center;">`;
+            
+            if(q.t === 'number' || q.t === 'text') {
+                html += `<input type="${q.t}" id="input-${q.id}" placeholder="${q.placeholder || ''}" ${q.min ? `min="${q.min}" max="${q.max}"` : ''} style="text-align: center; font-size: 1.5rem;" oninput="validateInput('${q.id}')">`;
+            } else if(q.t === 'pills') {
+                html += `<div class="pill-group">`;
+                q.opts.forEach((opt, i) => {
+                    html += `<button class="pill-btn" onclick="selectPill('${q.id}', '${opt}', this)">${opt}</button>`;
+                });
+                html += `</div>`;
+            } else if(q.t === 'range') {
+                html += `
+                    <input type="range" id="input-${q.id}" min="${q.min}" max="${q.max}" value="${q.val}" oninput="updateRange(this, '${q.id}', '${q.unit || ''}', ${q.dangerColor || false})">
+                    <div class="live-value" id="val-${q.id}">${q.val}${q.unit ? ' '+q.unit : ''}</div>
+                `;
+                academicAnswers[q.id] = q.val; // default
+            } else if(q.t === 'stepper') {
+                html += `
+                    <div class="stepper-control">
+                        <button class="stepper-btn" onclick="updateStepper('${q.id}', -1, ${q.min}, ${q.max})">-</button>
+                        <div class="stepper-value" id="val-${q.id}">${q.val}</div>
+                        <button class="stepper-btn" onclick="updateStepper('${q.id}', 1, ${q.min}, ${q.max})">+</button>
+                    </div>
+                `;
+                academicAnswers[q.id] = q.val;
+            } else if(q.t === 'stars') {
+                html += `<div class="star-rating">`;
+                for(let i=5; i>=1; i--) {
+                    const labels = ['Rarely', 'Occasionally', 'Sometimes', 'Often', 'Very often'];
+                    html += `<input type="radio" id="star${i}" name="rating" value="${i}" onclick="selectStar('${q.id}', ${i})"><label for="star${i}">★</label>`;
+                }
+                html += `</div>`;
+            } else if(q.t === 'switches') {
+                q.opts.forEach(opt => {
+                    html += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px;">
+                            <span style="color: var(--text-secondary); font-size: 0.95rem; width: 80%;">${opt.label}</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="switch-${opt.id}" onchange="academicAnswers['${opt.id}'] = this.checked ? 'Yes' : 'No'">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    `;
+                    academicAnswers[opt.id] = 'No'; // default
+                });
+            }
+            
+            html += `</div>`;
+            
+            html += `<div style="display: flex; gap: 20px; margin-top: 20px;">`;
+            if(currentScreen > 0) {
+                html += `<button class="btn-secondary" onclick="prevAcademicScreen()">&larr; Back</button>`;
+            }
+            if(currentScreen < academicQuestions.length - 1) {
+                html += `<button class="btn-primary" id="btn-next" onclick="nextAcademicScreen()" disabled>Next &rarr;</button>`;
+            } else {
+                html += `<button class="btn-primary" id="btn-submit" onclick="submitAcademic()">Submit Assessment &rarr;</button>`;
+            }
+            html += `</div>`;
+            
+            screen.innerHTML = html;
+            container.appendChild(screen);
+            
+            setTimeout(() => screen.classList.add('active'), 50);
+            kachuaAnim.showSpeechBubble(`Question ${currentScreen+1}`);
+            
+            // Auto enable if defaults exist
+            if(['range', 'stepper', 'switches'].includes(q.t)) {
+                enableNext();
+            }
+        }
+
+        function validateInput(id) {
+            const val = document.getElementById(`input-${id}`).value;
+            if(val) {
+                academicAnswers[id] = val;
+                enableNext();
+            }
+        }
+
+        function selectPill(id, val, el) {
+            academicAnswers[id] = val;
+            const siblings = el.parentElement.children;
+            for(let s of siblings) s.classList.remove('selected');
+            el.classList.add('selected');
+            enableNext();
+        }
+
+        function updateRange(el, id, unit, danger) {
+            const val = el.value;
+            const pct = ((val - el.min) / (el.max - el.min)) * 100;
+            el.style.setProperty('--pct', pct + '%');
+            document.getElementById(`val-${id}`).innerText = val + (unit ? ' '+unit : '');
+            academicAnswers[id] = val;
+            
+            if(danger) {
+                const risk = pct / 100;
+                pjs.updateSphereRisk(risk);
+            }
+        }
+
+        function updateStepper(id, change, min, max) {
+            let val = parseInt(academicAnswers[id]);
+            val += change;
+            if(val >= min && val <= max) {
+                academicAnswers[id] = val;
+                document.getElementById(`val-${id}`).innerText = val;
+            }
+        }
+
+        function selectStar(id, val) {
+            academicAnswers[id] = val;
+            enableNext();
+        }
+
+        function enableNext() {
+            const btn = document.getElementById('btn-next');
+            if(btn) btn.disabled = false;
+        }
+
+        function nextAcademicScreen() {
+            addXp(50);
+            currentScreen++;
+            renderAssessmentScreen();
+        }
+
+        function prevAcademicScreen() {
+            currentScreen--;
+            renderAssessmentScreen();
+        }
+
+        async function submitAcademic() {
+            kachuaAnim.runAcross();
+            showToast("Analyzing your responses...");
+            
+            // Map answers to model expected formats
+            const payload = {
+                Age: parseInt(academicAnswers['age']) || 18,
+                Gender: academicAnswers['gender'] || 'Prefer not to say',
+                student_name: academicAnswers['college'] || 'Student',
+                AddressType: academicAnswers['address'] || 'Urban area',
+                G1_Score: parseInt(academicAnswers['g1']) || 50,
+                PastFailures: parseInt(academicAnswers['failures']) || 0,
+                StudyTime: parseInt(academicAnswers['studytime']) || 3,
+                Absences: parseInt(academicAnswers['absences']) || 0,
+                GoOut: parseInt(academicAnswers['goout']) || 3,
+                Dalc: parseInt((academicAnswers['dalc']||'1').charAt(0)),
+                Walc: parseInt((academicAnswers['walc']||'1').charAt(0)),
+                FreeTime: parseInt(academicAnswers['freetime']) || 3,
+                SchoolSup: academicAnswers['schoolsup'],
+                FamSup: academicAnswers['famsup'],
+                Internet: academicAnswers['internet'],
+                HigherEd: academicAnswers['highered']
+            };
+
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                academicRiskData = await res.json();
+                
+                academicRiskData.student_name = payload.student_name; // carry over
+                
+                setTimeout(() => {
+                    renderAcademicResult();
+                }, 1000);
+            } catch(e) {
+                showToast("Error connecting to AI", "error");
+            }
+        }
+
+        function renderAcademicResult() {
+            showSection('academic-result');
+            
+            const riskScore = parseFloat(academicRiskData.risk_score).toFixed(1);
+            const isAtRisk = academicRiskData.prediction_label === 'AT RISK';
+            
+            document.getElementById('risk-score-display').innerText = riskScore + '%';
+            
+            const badgeContainer = document.getElementById('risk-badge-container');
+            const msgDisplay = document.getElementById('risk-message-display');
+            const ring = document.getElementById('risk-ring-progress');
+            
+            // Circle math
+            const offset = 282.7 - (282.7 * (riskScore / 100));
+            setTimeout(() => { ring.style.strokeDashoffset = offset; }, 500);
+            
+            if(isAtRisk) {
+                badgeContainer.innerHTML = `<span class="badge-terra" style="font-size: 1.2rem; padding: 8px 24px;">AT RISK</span>`;
+                msgDisplay.innerText = "Based on your responses, you may benefit from additional academic support.";
+                ring.style.stroke = "var(--accent-danger)";
+                kachuaAnim.worriedPose();
+            } else {
+                badgeContainer.innerHTML = `<span class="badge-sage" style="font-size: 1.2rem; padding: 8px 24px;">SAFE</span>`;
+                msgDisplay.innerText = "You appear to be on a stable academic track. Keep it up.";
+                ring.style.stroke = "var(--accent-secondary)";
+                kachuaAnim.victoryJump();
+            }
+
+            // Radar Chart
+            const ctx = document.getElementById('academicRadarChart').getContext('2d');
+            
+            // Normalize values for chart out of 10
+            const p = {
+                perf: (payload.G1_Score / 100) * 10,
+                att: 10 - (payload.Absences / 3),
+                study: payload.StudyTime,
+                hab: 10 - ((payload.Dalc + payload.Walc) / 2),
+                soc: payload.GoOut * 2,
+                sup: (payload.SchoolSup==='Yes'?3:0) + (payload.FamSup==='Yes'?3:0) + (payload.Internet==='Yes'?2:0) + (payload.HigherEd==='Yes'?2:0)
+            };
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Performance', 'Attendance', 'Study Habits', 'Healthy Habits', 'Social', 'Support System'],
+                    datasets: [{
+                        label: 'Your Profile',
+                        data: [p.perf, p.att, p.study, p.hab, p.soc, p.sup],
+                        backgroundColor: isAtRisk ? 'rgba(224, 122, 95, 0.2)' : 'rgba(122, 184, 139, 0.2)',
+                        borderColor: isAtRisk ? '#E07A5F' : '#7AB88B',
+                        pointBackgroundColor: '#84B4B9',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#a89880', font: {family: 'Inter'} },
+                            ticks: { display: false, max: 10, min: 0 }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        // Let's ensure payload is available by making it global or just pulling from answers
+        // Redeclaring for the chart:
+        let payload = {}; 
+
+        // Override submit to capture payload properly
+        const originalSubmit = submitAcademic;
+        submitAcademic = async function() {
+            payload = {
+                Age: parseInt(academicAnswers['age']) || 18,
+                Gender: academicAnswers['gender'] || 'Prefer not to say',
+                student_name: academicAnswers['college'] || 'Student',
+                AddressType: academicAnswers['address'] || 'Urban area',
+                G1_Score: parseInt(academicAnswers['g1']) || 50,
+                PastFailures: parseInt(academicAnswers['failures']) || 0,
+                StudyTime: parseInt(academicAnswers['studytime']) || 3,
+                Absences: parseInt(academicAnswers['absences']) || 0,
+                GoOut: parseInt(academicAnswers['goout']) || 3,
+                Dalc: parseInt((academicAnswers['dalc']||'1').charAt(0)),
+                Walc: parseInt((academicAnswers['walc']||'1').charAt(0)),
+                FreeTime: parseInt(academicAnswers['freetime']) || 3,
+                SchoolSup: academicAnswers['schoolsup'],
+                FamSup: academicAnswers['famsup'],
+                Internet: academicAnswers['internet'],
+                HigherEd: academicAnswers['highered']
+            };
+            originalSubmit();
+        }
+
+        async function generateAcademicOnlyReport() {
+            // Skips wellbeing
+            await submitWellbeingAndGetAdvice();
+        }
+
+        // --- 6. WELLBEING FLOW ---
+        function startWellbeing() {
+            showSection('wellbeing');
+            currentScreen = 0;
+            wellbeingAnswers = {};
+            document.getElementById('main-progress').style.width = '0%';
+            renderWellbeingScreen();
+        }
+
+        function renderWellbeingScreen() {
+            const container = document.getElementById('wellbeing-screens-container');
+            container.innerHTML = '';
+            
+            const q = wellbeingQuestions[currentScreen];
+            const pct = (currentScreen / wellbeingQuestions.length) * 100;
+            document.getElementById('main-progress').style.width = `${pct}%`;
+            
+            const screen = document.createElement('div');
+            screen.className = 'quest-screen';
+            
+            let html = `<div class="chapter-label" style="color:var(--accent-tertiary)">${q.ch}</div>`;
+            html += `<div class="question-text">${q.q}</div>`;
+            
+            html += `<div style="margin: 30px 0; width: 100%; display: flex; justify-content: center; gap: 20px;">`;
+            
+            if(q.t === 'yesno') {
+                html += `<button class="pill-btn" style="font-size: 1.2rem; padding: 15px 40px;" onclick="wbSelect('${q.id}', 'Yes', this)">Yes</button>`;
+                html += `<button class="pill-btn" style="font-size: 1.2rem; padding: 15px 40px;" onclick="wbSelect('${q.id}', 'No', this)">No</button>`;
+            } else if (q.t === 'pills') {
+                html += `<div class="pill-group">`;
+                q.opts.forEach(opt => {
+                    html += `<button class="pill-btn" onclick="wbSelect('${q.id}', '${opt}', this)">${opt}</button>`;
+                });
+                html += `</div>`;
+            } else if (q.t === 'text') {
+                html += `<textarea id="wb-text" placeholder="${q.placeholder}" rows="4" style="width:100%; max-width:600px;" oninput="wbText('${q.id}', this.value)"></textarea>`;
+            }
+            
+            html += `</div>`;
+            
+            html += `<div style="display: flex; gap: 20px; margin-top: 20px;">`;
+            if(currentScreen > 0) {
+                html += `<button class="btn-secondary" onclick="prevWbScreen()">&larr; Back</button>`;
+            }
+            if(currentScreen < wellbeingQuestions.length - 1) {
+                html += `<button class="btn-primary" id="btn-next-wb" onclick="nextWbScreen()" disabled>Next &rarr;</button>`;
+            } else {
+                html += `<button class="btn-primary" id="btn-submit-wb" onclick="processWellbeingResults()" disabled>Finish Assessment &rarr;</button>`;
+            }
+            html += `</div>`;
+            
+            screen.innerHTML = html;
+            container.appendChild(screen);
+            
+            setTimeout(() => screen.classList.add('active'), 50);
+            
+            // Adjust sphere color based on cumulative flags
+            let fCount = scoreFlags().length;
+            pjs.updateSphereRisk(Math.min(fCount * 0.1, 1));
+        }
+
+        function wbSelect(id, val, el) {
+            wellbeingAnswers[id] = val;
+            const siblings = el.parentElement.children;
+            for(let s of siblings) s.classList.remove('selected');
+            el.classList.add('selected');
+            
+            const btn = document.getElementById('btn-next-wb') || document.getElementById('btn-submit-wb');
+            if(btn) btn.disabled = false;
+        }
+
+        function wbText(id, val) {
+            if(val.trim().length > 0) {
+                wellbeingAnswers[id] = val;
+                const btn = document.getElementById('btn-next-wb') || document.getElementById('btn-submit-wb');
+                if(btn) btn.disabled = false;
+            }
+        }
+
+        function nextWbScreen() {
+            addXp(50);
+            currentScreen++;
+            renderWellbeingScreen();
+        }
+        function prevWbScreen() {
+            currentScreen--;
+            renderWellbeingScreen();
+        }
+
+        // --- 7. DIAGNOSTIC SCORING LOGIC ---
+        function scoreFlags() {
+            let flags = [];
+            const ans = wellbeingAnswers;
+            
+            // Group scoring
+            let counts = { adhd:0, dys:0, anx:0, dep:0, slp:0, fatigue:0, env:0, scrn:0, brn:0, imp:0 };
+            
+            wellbeingQuestions.forEach(q => {
+                let isFlagged = false;
+                if(q.t === 'yesno') {
+                    if((ans[q.id] === 'Yes' && !q.reverse) || (ans[q.id] === 'No' && q.reverse)) isFlagged = true;
+                } else if(q.t === 'pills' && q.flagIf === ans[q.id]) {
+                    isFlagged = true;
+                }
+                
+                if(isFlagged && q.flagGrp) {
+                    counts[q.flagGrp]++;
+                }
+            });
+
+            if(counts.adhd >= 3) flags.push({ condition: 'Cognitive Distraction / ADHD Indicators', confidence: counts.adhd >= 4 ? 'Likely' : 'Possible' });
+            if(counts.dys >= 1) flags.push({ condition: 'Language Processing / Dyslexia Indicators', confidence: 'Possible' });
+            if(counts.anx >= 1) flags.push({ condition: 'Anxiety Indicators', confidence: counts.anx >= 2 ? 'Likely' : 'Possible' });
+            if(counts.dep >= 1) flags.push({ condition: 'Low Mood / Depression Indicators', confidence: counts.dep >= 2 ? 'Likely' : 'Possible' });
+            if(counts.slp >= 1) flags.push({ condition: 'Sleep Deprivation', confidence: counts.slp >= 2 ? 'Likely' : 'Possible' });
+            if(counts.fatigue >= 1) flags.push({ condition: 'Nutritional / Chronic Fatigue', confidence: counts.fatigue >= 2 ? 'Likely' : 'Possible' });
+            if(counts.env >= 1) flags.push({ condition: 'Environmental Stressors', confidence: counts.env >= 2 ? 'Likely' : 'Possible' });
+            if(counts.scrn >= 1) flags.push({ condition: 'Digital Overwhelm', confidence: counts.scrn >= 2 ? 'Likely' : 'Possible' });
+            if(counts.brn >= 1) flags.push({ condition: 'Burnout', confidence: 'Likely' });
+            if(counts.imp >= 1) flags.push({ condition: 'Imposter Syndrome', confidence: counts.imp >= 2 ? 'Likely' : 'Possible' });
+
+            return flags;
+        }
+
+        function processWellbeingResults() {
+            kachuaAnim.runAcross();
+            diagnosticFlags = scoreFlags();
+            renderWellbeingResultScreen();
+        }
+
+        function renderWellbeingResultScreen() {
+            showSection('wellbeing-result');
+            const container = document.getElementById('wellbeing-flags-container');
+            container.innerHTML = '';
+            
+            if(diagnosticFlags.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card" style="padding: 40px; text-align: center; border-color: var(--accent-secondary);">
+                        <h3 style="color: var(--accent-secondary); font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 10px;">Looking Good!</h3>
+                        <p style="color: var(--text-secondary);">You appear to be doing well overall. Keep checking in with yourself.</p>
+                    </div>
+                `;
+                kachuaAnim.victoryJump();
+            } else {
+                diagnosticFlags.forEach((flag, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-card wellbeing-card';
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleRec(${i})">
+                            <span class="condition-name">${flag.condition}</span>
+                            <div>
+                                <span class="${flag.confidence === 'Likely' ? 'badge-terra' : 'badge-amber'}">${flag.confidence}</span>
+                                <span style="margin-left: 10px; color: var(--accent-gold);">▼</span>
+                            </div>
+                        </div>
+                        <div class="recommendation-content" id="rec-${i}">
+                            What Kachua recommends: Discuss these feelings with a counselor. Small adjustments to your routine, like consistent sleep and study blocks, can help immediately. The AI report will provide detailed, personalized steps.
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                if(diagnosticFlags.length > 2) {
+                    kachuaAnim.worriedPose();
+                    kachuaAnim.showSpeechBubble("Kachua sees you. Please reach out for support.");
+                } else {
+                    kachuaAnim.startBob();
+                    kachuaAnim.showSpeechBubble("A few things caught my eye. You are doing better than you think.");
+                }
+            }
+        }
+
+        window.toggleRec = function(id) {
+            const el = document.getElementById(`rec-${id}`);
+            el.classList.toggle('open');
+        }
+
+        async function submitWellbeingAndGetAdvice() {
+            const btn = document.getElementById('btn-get-full-ai-report');
+            btn.innerHTML = `<img src="${"{{ url_for('static', filename='assets/kachua_logo.svg') }}"}" width="24" class="loader-turtle" style="vertical-align:middle; margin-right:8px;"> Generating...`;
+            btn.disabled = true;
+            
+            const share = document.getElementById('share-teacher-toggle') ? document.getElementById('share-teacher-toggle').checked : false;
+            
+            // 1. Save Wellbeing
+            if(Object.keys(wellbeingAnswers).length > 0) {
+                await fetch('/api/wellbeing', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        student_name: academicRiskData ? academicRiskData.student_name : 'Anonymous',
+                        answers: wellbeingAnswers,
+                        diagnostic_flags: diagnosticFlags,
+                        share_with_teacher: share
+                    })
+                });
+            }
+
+            // 2. Get Gemini Advice & Redirect
+            try {
+                const res = await fetch('/api/gemini_advice', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        student_name: academicRiskData ? academicRiskData.student_name : 'Student',
+                        academic_data: academicRiskData || {},
+                        diagnostic_flags: diagnosticFlags,
+                        wellbeing_answers: wellbeingAnswers
+                    })
+                });
+                const data = await res.json();
+                if(data.session_id) {
+                    window.location.href = `/result/${data.session_id}`;
+                } else {
+                    showToast("Error generating report", "error");
+                    btn.innerText = "Try Again";
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                showToast("Connection error", "error");
+                btn.innerText = "Try Again";
+                btn.disabled = false;
+            }
+        }
+
+        // --- 8. TEACHER DASHBOARD LOGIC ---
+        function switchHqTab(tab) {
+            document.getElementById('tab-students').classList.remove('selected');
+            document.getElementById('tab-wellbeing').classList.remove('selected');
+            document.getElementById(`tab-${tab}`).classList.add('selected');
+            
+            document.getElementById('hq-students-view').style.display = tab === 'students' ? 'grid' : 'none';
+            document.getElementById('hq-wellbeing-view').style.display = tab === 'wellbeing' ? 'block' : 'none';
+            
+            if(tab === 'students') loadTeacherData();
+            if(tab === 'wellbeing') loadWellbeingReports();
+        }
+
+        function toggleBulkUpload() {
+            const el = document.getElementById('bulk-upload-content');
+            const icon = document.getElementById('bulk-toggle-icon');
+            if(el.style.maxHeight && el.style.maxHeight !== '0px') {
+                el.style.maxHeight = '0px';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                el.style.maxHeight = '2000px';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if(e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if(file) {
+                document.getElementById('file-info').style.display = 'block';
+                document.getElementById('file-name').innerText = '✅ ' + file.name;
+                document.getElementById('file-size').innerText = '(' + (file.size/1024).toFixed(1) + ' KB)';
+                document.getElementById('btn-run-analysis').style.display = 'inline-block';
+            }
+        }
+
+        async function runBulkAnalysis() {
+            const file = fileInput.files[0];
+            if(!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            document.getElementById('btn-run-analysis').style.display = 'none';
+            document.getElementById('bulk-loader').style.display = 'block';
+            document.getElementById('bulk-results').style.display = 'none';
+            
+            // Cycle text
+            const msgs = ["Reading your file...", "Running risk predictions...", "Compiling the report..."];
+            let idx = 0;
+            const textInterval = setInterval(() => {
+                idx = (idx + 1) % msgs.length;
+                const el = document.getElementById('loader-text');
+                gsap.to(el, {opacity: 0, duration: 0.3, onComplete: () => {
+                    el.innerText = msgs[idx];
+                    gsap.to(el, {opacity: 1, duration: 0.3});
+                }});
+            }, 1500);
+
+            try {
+                const res = await fetch('/api/bulk_analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                clearInterval(textInterval);
+                document.getElementById('bulk-loader').style.display = 'none';
+                
+                if(data.error) {
+                    showToast(data.error, "error");
+                    document.getElementById('btn-run-analysis').style.display = 'inline-block';
+                    return;
+                }
+                
+                showToast("Analysis Complete!");
+                kachuaAnim.victoryJump();
+                renderBulkResults(data);
+                loadTeacherData(); // Refresh bg counts
+                
+            } catch(e) {
+                clearInterval(textInterval);
+                document.getElementById('bulk-loader').style.display = 'none';
+                document.getElementById('btn-run-analysis').style.display = 'inline-block';
+                showToast("Server error during analysis", "error");
+            }
+        }
+
+        function renderBulkResults(data) {
+            document.getElementById('bulk-results').style.display = 'block';
+            
+            // Render charts
+            const distCtx = document.getElementById('bulkChartDist').getContext('2d');
+            new Chart(distCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.risk_distribution),
+                    datasets: [{
+                        label: 'Students',
+                        data: Object.values(data.risk_distribution),
+                        backgroundColor: ['#A8D5BA', '#7AB88B', '#84B4B9', '#2C5E5E', '#E07A5F']
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            });
+
+            const factCtx = document.getElementById('bulkChartFactors').getContext('2d');
+            new Chart(factCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.top_risk_factors.map(f => f.feature),
+                    datasets: [{
+                        label: 'Importance %',
+                        data: data.top_risk_factors.map(f => f.importance),
+                        backgroundColor: '#7AB88B'
+                    }]
+                },
+                options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+            });
+
+            const tbody = document.querySelector('#bulk-high-risk-table tbody');
+            tbody.innerHTML = '';
+            data.highest_risk_students.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.Name}</td>
+                        <td style="font-family:monospace; color:var(--text-muted);">${s.UID}</td>
+                        <td style="color:var(--accent-danger); font-weight:bold;">${s.Risk_Score.toFixed(1)}</td>
+                        <td><span class="badge-terra">${s.Risk_Label}</span></td>
+                    </tr>
+                `;
+            });
+            
+            gsap.from('#bulk-results > div', {y: 30, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power2.out"});
+        }
+
+        async function loadTeacherData() {
+            try {
+                const res = await fetch('/api/students');
+                const students = await res.json();
+                
+                const total = students.length;
+                const atrisk = students.filter(s => s.prediction_label === 'AT RISK').length;
+                const safe = total - atrisk;
+                const avg = total > 0 ? students.reduce((acc,s)=>acc+s.risk_score, 0)/total : 0;
+                
+                // Animate numbers
+                animateValue("stat-total", parseInt(document.getElementById("stat-total").innerText), total, 1500);
+                animateValue("stat-atrisk", parseInt(document.getElementById("stat-atrisk").innerText), atrisk, 1500);
+                animateValue("stat-safe", parseInt(document.getElementById("stat-safe").innerText), safe, 1500);
+                animateValue("stat-avg", parseFloat(document.getElementById("stat-avg").innerText), parseFloat(avg.toFixed(1)), 1500, true);
+                
+                if(atrisk > 0) document.getElementById('stat-atrisk').parentElement.classList.add('at-risk-pulse');
+                
+                // Render grid
+                const grid = document.getElementById('hq-students-view');
+                grid.innerHTML = '';
+                students.slice(0, 50).forEach(s => {
+                    const isAtRisk = s.prediction_label === 'AT RISK';
+                    grid.innerHTML += `
+                        <div class="glass-card student-card ${isAtRisk ? 'at-risk-pulse' : ''}">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div>
+                                    <h4 style="color:var(--text-primary); font-family:var(--font-display);">${s.name}</h4>
+                                    <p style="color:var(--text-muted); font-size:0.8rem; font-family:monospace;">${s.uid}</p>
+                                </div>
+                                <span class="${isAtRisk ? 'badge-terra' : 'badge-sage'}">${s.prediction_label}</span>
+                            </div>
+                            <div style="margin-top: 15px; display:flex; justify-content:space-between; align-items:baseline;">
+                                <span style="font-size: 2rem; font-family:var(--font-display); font-weight:bold; color:${isAtRisk?'var(--accent-danger)':'var(--accent-secondary)'};">${s.risk_score.toFixed(1)}</span>
+                                <span style="color:var(--text-muted); font-size:0.8rem;">Risk Score</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function loadWellbeingReports() {
+            try {
+                const res = await fetch('/api/wellbeing_reports');
+                const reports = await res.json();
+                
+                const tbody = document.querySelector('#wellbeing-reports-table tbody');
+                tbody.innerHTML = '';
+                reports.forEach(r => {
+                    const flagsHtml = r.diagnostic_flags.map(f => `<span class="${f.confidence==='Likely'?'badge-terra':'badge-amber'}" style="margin-right:5px; margin-bottom:5px; display:inline-block;">${f.condition}</span>`).join('');
+                    const dateStr = new Date(r.submitted_at).toLocaleDateString();
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight:bold;">${r.student_name} <br><span style="font-weight:normal; font-family:monospace; font-size:0.8rem; color:var(--text-muted);">${r.student_uid}</span></td>
+                            <td>${dateStr}</td>
+                            <td>${flagsHtml || '<span style="color:var(--text-muted)">None</span>'}</td>
+                            <td><button class="btn-secondary" style="padding: 6px 12px; font-size:0.8rem;">Review</button></td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function animateValue(id, start, end, duration, isFloat=false) {
+            const obj = document.getElementById(id);
+            if(!obj || start === end) {
+                if(obj) obj.innerText = isFloat ? end.toFixed(1) : end;
+                return;
+            }
+            gsap.to({val: start}, {
+                val: end,
+                duration: duration/1000,
+                ease: "power2.out",
+                onUpdate: function() {
+                    obj.innerText = isFloat ? this.targets()[0].val.toFixed(1) : Math.floor(this.targets()[0].val);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

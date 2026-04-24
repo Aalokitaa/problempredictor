@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KACHUA - Academic Support System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="three-bg"></canvas>
+    <div class="vignette"></div>
+
+    <!-- Dust motes -->
+    <div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div>
+    <div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div>
+    <div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div>
+    <div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div>
+    <div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div><div class="dust-mote"></div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+
+    <!-- XP counter -->
+    <div class="xp-counter" id="xpCounter">Points earned: 0</div>
+
+    <!-- Turtle mascot -->
+    <div class="turtle-wrapper quest-page" id="turtleWrapper">
+        <svg width="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#d6eef5" opacity="0.5"/>
+            <ellipse cx="100" cy="115" rx="45" ry="35" fill="#a8d88a" stroke="#7ab860" stroke-width="1.5"/>
+            <ellipse cx="100" cy="118" rx="28" ry="22" fill="#c8e8a8" opacity="0.6"/>
+            <ellipse cx="100" cy="98" rx="42" ry="33" fill="#5a8a5a" stroke="#3d6b3d" stroke-width="1.5"/>
+            <circle cx="100" cy="68" r="20" fill="#a8d88a" stroke="#7ab860" stroke-width="1.5"/>
+            <circle cx="93" cy="63" r="3.5" fill="#1a3a1a"/><circle cx="94" cy="62" r="1" fill="white"/>
+            <circle cx="107" cy="63" r="3.5" fill="#1a3a1a"/><circle cx="108" cy="62" r="1" fill="white"/>
+            <path d="M 88 72 Q 100 80 112 72" fill="none" stroke="#2c4a2c" stroke-width="2" stroke-linecap="round"/>
+            <ellipse id="flipper-fl" cx="62" cy="100" rx="12" ry="8" fill="#8bc870" stroke="#7ab860" stroke-width="1" transform="rotate(-35 62 100)"/>
+            <ellipse id="flipper-fr" cx="138" cy="100" rx="12" ry="8" fill="#8bc870" stroke="#7ab860" stroke-width="1" transform="rotate(35 138 100)"/>
+        </svg>
+        <div class="speech-bubble" style="display: none;"></div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="container" id="mainContainer" style="position: relative; width: 100vw; height: 100vh;">
+
+        <!-- LANDING PAGE -->
+        <section id="landing-page" class="page-section">
+            <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(14, 12, 9, 0.7); backdrop-filter: blur(12px);">
+                <div style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">KACHUA</div>
+                <div style="display: flex; gap: 30px; color: var(--text-primary);">
+                    <a href="#" style="text-decoration: none; color: inherit; transition: color 0.3s;">Home</a>
+                    <a href="#" onclick="startAssessment(); return false;" style="text-decoration: none; color: inherit; transition: color 0.3s;">Assessment</a>
+                    <a href="#" onclick="startWellbeing(); return false;" style="text-decoration: none; color: inherit; transition: color 0.3s;">Wellbeing</a>
+                    <a href="#" onclick="goToTeacher(); return false;" style="text-decoration: none; color: inherit; transition: color 0.3s;">Teacher HQ</a>
+                </div>
+            </nav>
+
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 80px 40px 40px; text-align: center;">
+                <!-- Hero logo -->
+                <svg width="180px" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 40px;" id="heroLogo">
+                    <circle cx="100" cy="100" r="95" fill="#d6eef5" opacity="0.5"/>
+                    <ellipse cx="100" cy="115" rx="45" ry="35" fill="#a8d88a" stroke="#7ab860" stroke-width="1.5"/>
+                    <ellipse cx="100" cy="118" rx="28" ry="22" fill="#c8e8a8" opacity="0.6"/>
+                    <ellipse cx="100" cy="98" rx="42" ry="33" fill="#5a8a5a" stroke="#3d6b3d" stroke-width="1.5"/>
+                    <circle cx="100" cy="68" r="20" fill="#a8d88a" stroke="#7ab860" stroke-width="1.5"/>
+                    <circle cx="93" cy="63" r="3.5" fill="#1a3a1a"/><circle cx="94" cy="62" r="1" fill="white"/>
+                    <circle cx="107" cy="63" r="3.5" fill="#1a3a1a"/><circle cx="108" cy="62" r="1" fill="white"/>
+                    <path d="M 88 72 Q 100 80 112 72" fill="none" stroke="#2c4a2c" stroke-width="2" stroke-linecap="round"/>
+                    <ellipse cx="62" cy="100" rx="12" ry="8" fill="#8bc870" transform="rotate(-35 62 100)"/>
+                    <ellipse cx="138" cy="100" rx="12" ry="8" fill="#8bc870" transform="rotate(35 138 100)"/>
+                </svg>
+
+                <h1 style="font-family: var(--font-display); font-size: 3.5rem; color: var(--accent-gold); letter-spacing: 0.4em; margin-bottom: 10px;">KACHUA</h1>
+                <p style="font-style: italic; color: var(--accent-secondary); font-size: 1.2rem; margin-bottom: 20px;">We're there for you ;)</p>
+                <p style="color: var(--text-muted); font-size: 1rem; max-width: 600px; margin-bottom: 60px;">An AI-powered early intervention system built with empathy for students</p>
+
+                <!-- Feature cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1000px; margin-bottom: 60px; width: 100%;">
+                    <!-- Student Assessment -->
+                    <div class="glass-card" style="padding: 2rem; cursor: pointer;" onclick="startAssessment()">
+                        <div style="font-size: 2rem; margin-bottom: 15px;">🐢</div>
+                        <h3 style="font-family: var(--font-display); color: var(--accent-gold); margin-bottom: 10px;">Student Assessment</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">Answer a short set of questions about your academic habits. Kachua will assess your situation and connect you with support.</p>
+                        <button class="btn btn-primary">START ASSESSMENT →</button>
+                    </div>
+
+                    <!-- Wellbeing Check -->
+                    <div class="glass-card" style="padding: 2rem; cursor: pointer;" onclick="startWellbeing()">
+                        <div style="font-size: 2rem; margin-bottom: 15px;">💚</div>
+                        <h3 style="font-family: var(--font-display); color: var(--accent-gold); margin-bottom: 10px;">Wellbeing Check</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">A deeper look at what may be affecting your focus, energy, and learning. Get personalized support.</p>
+                        <button class="btn btn-primary">TAKE THE CHECK →</button>
+                    </div>
+
+                    <!-- Teacher Dashboard -->
+                    <div class="glass-card" style="padding: 2rem; cursor: pointer;" onclick="goToTeacher()">
+                        <div style="font-size: 2rem; margin-bottom: 15px;">🎓</div>
+                        <h3 style="font-family: var(--font-display); color: var(--accent-gold); margin-bottom: 10px;">Teacher HQ</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">View student risk scores, wellbeing reports, run bulk analysis, and log interventions.</p>
+                        <button class="btn btn-primary">ENTER DASHBOARD →</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div style="display: flex; justify-content: center; gap: 60px; margin: 60px 0; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; color: var(--accent-gold); font-family: var(--font-display); margin-bottom: 5px;">5,000+</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Students Analyzed</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; color: var(--accent-gold); font-family: var(--font-display); margin-bottom: 5px;">94%</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Prediction Accuracy</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; color: var(--accent-gold); font-family: var(--font-display); margin-bottom: 5px;">🤖</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Gemini AI Powered</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer style="position: fixed; bottom: 0; left: 0; right: 0; text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.85rem; background: rgba(14, 12, 9, 0.5);">
+                Built with care by Aalokita Chibb · KACHUA v1.0 · Powered by Gemini AI
+            </footer>
+        </section>
+
+        <!-- ASSESSMENT FLOW -->
+        <section id="assessment-page" class="page-section" style="display: none; padding: 80px 40px 100px;">
+            <div style="max-width: 800px; margin: 0 auto; min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+                <div id="questContainer" style="width: 100%; text-align: center; position: relative; height: 400px; margin-bottom: 40px;"></div>
+
+                <div style="display: flex; gap: 20px; justify-content: center; width: 100%;">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← PREVIOUS</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">NEXT →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- WELLBEING FLOW -->
+        <section id="wellbeing-page" class="page-section" style="display: none; padding: 80px 40px 100px;">
+            <div style="max-width: 800px; margin: 0 auto; min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+                <div id="wellbeingContainer" style="width: 100%; text-align: center; position: relative; height: 400px; margin-bottom: 40px;"></div>
+
+                <div style="display: flex; gap: 20px; justify-content: center; width: 100%;">
+                    <button class="btn btn-secondary" id="wellbeingPrevBtn" onclick="previousWellbeingQuestion()" style="display: none;">← PREVIOUS</button>
+                    <button class="btn btn-primary" id="wellbeingNextBtn" onclick="nextWellbeingQuestion()">NEXT →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTS PAGE -->
+        <section id="results-page" class="page-section" style="display: none; padding: 80px 40px 40px;">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <h1 style="font-family: var(--font-display); color: var(--accent-gold); font-size: 2.5rem; margin-bottom: 10px; text-align: center;">Your Assessment Results</h1>
+                
+                <div id="resultsContent" style="margin-top: 40px;"></div>
+
+                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 40px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="startWellbeing()">Continue to Wellbeing Check →</button>
+                    <button class="btn btn-secondary" onclick="goHome()">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEACHER DASHBOARD -->
+        <section id="teacher-page" class="page-section" style="display: none; padding: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                <h1 style="font-family: var(--font-display); color: var(--accent-gold); font-size: 2.5rem;">KACHUA HQ</h1>
+                <div style="color: var(--text-secondary); font-family: var(--font-display);" id="clock"></div>
+            </div>
+
+            <!-- Stats cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+                    <div style="color: var(--accent-tertiary); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase;">Total Students</div>
+                    <div style="font-size: 2rem; color: var(--accent-gold); font-family: var(--font-display); font-weight: 700;" id="totalStudents">0</div>
+                </div>
+                <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+                    <div style="color: var(--accent-danger); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase;">At-Risk</div>
+                    <div style="font-size: 2rem; color: var(--accent-danger); font-family: var(--font-display); font-weight: 700;" id="atRiskCount">0</div>
+                </div>
+                <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+                    <div style="color: var(--accent-secondary); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase;">Safe</div>
+                    <div style="font-size: 2rem; color: var(--accent-secondary); font-family: var(--font-display); font-weight: 700;" id="safeCount">0</div>
+                </div>
+                <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+                    <div style="color: var(--accent-gold); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase;">Avg Risk Score</div>
+                    <div style="font-size: 2rem; color: var(--accent-gold); font-family: var(--font-display); font-weight: 700;" id="avgRisk">0%</div>
+                </div>
+            </div>
+
+            <!-- Students grid -->
+            <div style="margin-bottom: 40px;">
+                <h2 style="font-family: var(--font-display); color: var(--accent-gold); margin-bottom: 20px;">Recent Students</h2>
+                <div id="studentsGrid" class="dashboard-grid"></div>
+            </div>
+
+            <!-- Bulk upload section -->
+            <div class="glass-card" style="padding: 2rem; margin-bottom: 40px;">
+                <h2 style="font-family: var(--font-display); color: var(--accent-gold); margin-bottom: 20px;">Bulk Analysis</h2>
+                <div class="upload-zone" id="uploadZone" style="cursor: pointer;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📁</div>
+                    <p style="margin-bottom: 10px;">Drop your student data file here</p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports CSV, Excel, JSON — up to 10MB</p>
+                    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json" style="display: none;">
+                    <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()" style="margin-top: 15px;">BROWSE FILES</button>
+                </div>
+                <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeBulkFile()" style="margin-top: 20px; display: none;">RUN ANALYSIS</button>
+                <div id="analysisResults" style="margin-top: 30px;"></div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="goHome()" style="width: 100%; margin-top: 20px;">← Back to Home</button>
+        </section>
+    </div>
+
+    <script>
+        // Global state
+        const state = {
+            studentName: '',
+            studentUID: '',
+            studentContact: '',
+            academicAnswers: {},
+            wellbeingAnswers: {},
+            currentAcademicScreen: 0,
+            currentWellbeingScreen: 0,
+            totalAcademicPoints: 0,
+            academicData: {},
+            wellbeingFlags: []
+        };
+
+        // Academic questions (Screens 1-25)
+        const academicQuestions = [
+            { chapter: 'About You', question: 'What is your full name?', hint: 'First and last name', type: 'text', key: 'name' },
+            { chapter: 'About You', question: 'What is your student ID or unique identifier?', hint: 'Used to keep your data private', type: 'text', key: 'uid' },
+            { chapter: 'About You', question: 'How old are you?', hint: 'Enter your current age', type: 'number', min: 16, max: 25, key: 'Age' },
+            { chapter: 'About You', question: 'How do you identify?', hint: 'Select the option that feels right', type: 'pills', options: ['Male', 'Female', 'Other'], key: 'Gender' },
+            { chapter: 'About You', question: 'Where do you currently live?', hint: 'This helps us understand your study environment', type: 'pills', options: ['Urban area', 'Rural area'], key: 'AddressType' },
+            { chapter: 'Your Academics', question: 'What was your score in your most recent major exam?', hint: 'Enter a score out of 100', type: 'range', min: 0, max: 100, key: 'G1_Score' },
+            { chapter: 'Your Academics', question: 'How many courses have you had to repeat?', hint: 'Include failed or dropped courses', type: 'stepper', min: 0, max: 5, key: 'PastFailures' },
+            { chapter: 'Your Academics', question: 'How many hours per week do you study outside class?', hint: 'Count only active study time', type: 'range', min: 0, max: 10, key: 'StudyTime' },
+            { chapter: 'Your Academics', question: 'How many classes have you missed this semester?', hint: 'Be honest — this helps us support you better', type: 'range', min: 0, max: 30, key: 'Absences' },
+            { chapter: 'Your Habits', question: 'How often do you go out socially?', hint: 'Rate from rarely to very often', type: 'pills', options: ['Rarely', 'Occasionally', 'Sometimes', 'Often', 'Very often'], key: 'GoOut' },
+            { chapter: 'Your Habits', question: 'How often do you consume alcohol on weekdays?', hint: 'Completely confidential', type: 'pills', options: ['Never', 'Rarely', 'Sometimes', 'Often', 'Daily'], key: 'Dalc' },
+            { chapter: 'Your Habits', question: 'How often do you consume alcohol on weekends?', hint: 'Again, completely private', type: 'pills', options: ['Never', 'Rarely', 'Sometimes', 'Often', 'Daily'], key: 'Walc' },
+            { chapter: 'Your Habits', question: 'How much free time do you have daily?', hint: 'Time with no obligations', type: 'range', min: 1, max: 5, key: 'FreeTime' },
+            { chapter: 'Your Support System', question: 'Do you receive academic support from your institution?', hint: 'Tutoring, counseling, help programs', type: 'pills', options: ['Yes', 'No'], key: 'SchoolSup' },
+            { chapter: 'Your Support System', question: 'Do you have family support for your studies?', hint: 'Support from family or those you live with', type: 'pills', options: ['Yes', 'No'], key: 'FamSup' },
+            { chapter: 'Your Support System', question: 'Do you have reliable internet access?', hint: 'For studying and coursework', type: 'pills', options: ['Yes', 'No'], key: 'Internet' },
+            { chapter: 'Your Support System', question: 'Is higher education one of your main goals?', hint: 'Your future aspirations', type: 'pills', options: ['Yes', 'No'], key: 'HigherEd' }
+        ];
+
+        // Wellbeing questions (83 questions total)
+        const wellbeingQuestions = [
+            { chapter: 'How Your Mind Works', question: 'Do you often find your mind wandering during lessons?', type: 'yesno', key: 'Q13' },
+            { chapter: 'How Your Mind Works', question: 'Do you frequently lose track of what was just said?', type: 'yesno', key: 'Q14' },
+            { chapter: 'How Your Mind Works', question: 'Do you find it difficult to start tasks?', type: 'yesno', key: 'Q15' },
+            { chapter: 'How Your Mind Works', question: 'Do you forget instructions shortly after hearing them?', type: 'yesno', key: 'Q16' },
+            { chapter: 'How Your Mind Works', question: 'Do you find it hard to stay organized?', type: 'yesno', key: 'Q17' },
+            { chapter: 'How Your Mind Works', question: 'Does writing by hand feel unusually tiring?', type: 'yesno', key: 'Q18' },
+            { chapter: 'How Your Mind Works', question: 'Do you understand better when explained verbally?', type: 'yesno', key: 'Q19' },
+            { chapter: 'How Your Mind Works', question: 'Do you reverse letters or skip words when reading?', type: 'yesno', key: 'Q20' },
+            { chapter: 'How Your Mind Works', question: 'Do you find charts and diagrams hard to interpret?', type: 'yesno', key: 'Q21' },
+            { chapter: 'How Your Mind Works', question: 'Do you struggle to follow conversations in noisy places?', type: 'yesno', key: 'Q22' },
+            { chapter: 'How Your Mind Works', question: 'Does it take you much longer than others to complete work?', type: 'yesno', key: 'Q23' },
+            { chapter: 'How Your Mind Works', question: 'Do you know the answer but struggle to express it?', type: 'yesno', key: 'Q24' },
+            { chapter: 'Your Emotional Health', question: 'Do you feel anxious or worried frequently?', type: 'yesno', key: 'Q25' },
+            { chapter: 'Your Emotional Health', question: 'Do you avoid speaking up due to fear of judgment?', type: 'yesno', key: 'Q26' },
+            { chapter: 'Your Emotional Health', question: 'Have you experienced sudden panic episodes?', type: 'yesno', key: 'Q27' },
+            { chapter: 'Your Emotional Health', question: 'Have you felt persistently sad for more than two weeks?', type: 'yesno', key: 'Q28' },
+            { chapter: 'Your Emotional Health', question: 'Have you lost interest in things you enjoyed?', type: 'yesno', key: 'Q29' },
+            { chapter: 'Your Emotional Health', question: 'Do you experience intrusive or repetitive thoughts?', type: 'yesno', key: 'Q30' },
+            { chapter: 'Your Emotional Health', question: 'Have you been through something traumatic?', type: 'yesno', key: 'Q31' },
+            { chapter: 'Your Emotional Health', question: 'Do your moods shift dramatically?', type: 'yesno', key: 'Q32' },
+            { chapter: 'Your Emotional Health', question: 'Do you have difficulty with food or body image?', type: 'yesno', key: 'Q33' },
+            { chapter: 'Your Sleep', question: 'How many hours of sleep do you usually get on weeknights?', type: 'pills', options: ['Less than 5', '5 to 6', '6 to 7', '7 to 8', 'More than 8'], key: 'Q34' },
+            { chapter: 'Your Sleep', question: 'When you wake up, do you feel rested or tired?', type: 'pills', options: ['I feel rested', 'I still feel tired'], key: 'Q35' },
+            { chapter: 'Your Sleep', question: 'Do you find it hard to fall asleep before midnight?', type: 'yesno', key: 'Q36' },
+            { chapter: 'Your Sleep', question: 'Has anyone told you that you snore or stop breathing?', type: 'yesno', key: 'Q37' },
+            { chapter: 'Your Sleep', question: 'Do you fall asleep suddenly during the day?', type: 'yesno', key: 'Q38' },
+            { chapter: 'Your Sleep', question: 'Do your legs feel restless at night?', type: 'yesno', key: 'Q39' },
+            { chapter: 'Your Sleep', question: 'Do you use screens for more than 30 minutes before sleep?', type: 'yesno', key: 'Q40' },
+            { chapter: 'Your Sleep', question: 'How consistent is your sleep schedule?', type: 'pills', options: ['Very consistent', 'Somewhat consistent', 'Very inconsistent'], key: 'Q41' },
+            { chapter: 'Your Physical Health', question: 'Have you been diagnosed with a neurological condition?', type: 'yesno', key: 'Q42' },
+            { chapter: 'Your Physical Health', question: 'Have you ever had a concussion or head injury?', type: 'yesno', key: 'Q43' },
+            { chapter: 'Your Physical Health', question: 'Do you get frequent or severe headaches?', type: 'yesno', key: 'Q44' },
+            { chapter: 'Your Physical Health', question: 'Do you experience involuntary movements or tics?', type: 'yesno', key: 'Q45' },
+            { chapter: 'Your Physical Health', question: 'Have you noticed recent changes in memory or focus?', type: 'yesno', key: 'Q46' },
+            { chapter: 'Your Physical Health', question: 'Do you manage an ongoing health condition?', type: 'yesno', key: 'Q47' },
+            { chapter: 'Your Physical Health', question: 'Do you often feel physically exhausted?', type: 'yesno', key: 'Q48' },
+            { chapter: 'Your Physical Health', question: 'Do hormonal changes affect your mood or focus?', type: 'pills', options: ['Yes', 'No', 'Not applicable'], key: 'Q49' },
+            { chapter: 'Nutrition and Energy', question: 'How many full meals do you eat on a typical day?', type: 'pills', options: ['None or one', 'Two', 'Three', 'More than three'], key: 'Q50' },
+            { chapter: 'Nutrition and Energy', question: 'Do you feel dizzy or foggy before meals?', type: 'yesno', key: 'Q51' },
+            { chapter: 'Nutrition and Energy', question: 'Have you had blood tests for deficiencies recently?', type: 'pills', options: ['Yes', 'No', 'Not sure'], key: 'Q52' },
+            { chapter: 'Nutrition and Energy', question: 'Do you drink enough water?', type: 'pills', options: ['I drink enough', 'I am often thirsty'], key: 'Q53' },
+            { chapter: 'Nutrition and Energy', question: 'Are you restricting eating or skipping meals?', type: 'yesno', key: 'Q54' },
+            { chapter: 'Nutrition and Energy', question: 'Do you rely on caffeine or energy drinks to stay alert?', type: 'yesno', key: 'Q55' },
+            { chapter: 'Your Senses and Body', question: 'Do you have concerns about your hearing?', type: 'pills', options: ['Yes', 'No'], key: 'Q56' },
+            { chapter: 'Your Senses and Body', question: 'Do you have concerns about your vision?', type: 'pills', options: ['Yes', 'No'], key: 'Q57' },
+            { chapter: 'Your Senses and Body', question: 'Do certain lighting or colors cause discomfort?', type: 'yesno', key: 'Q58' },
+            { chapter: 'Your Senses and Body', question: 'Do you experience ongoing physical pain?', type: 'yesno', key: 'Q59' },
+            { chapter: 'Your Senses and Body', question: 'Do you have difficulty with fine motor control?', type: 'yesno', key: 'Q60' },
+            { chapter: 'Your Environment', question: 'Is your study space quiet and safe enough?', type: 'yesno', key: 'Q61' },
+            { chapter: 'Your Environment', question: 'Are there significant pressures at home?', type: 'yesno', key: 'Q62' },
+            { chapter: 'Your Environment', question: 'Do you feel safe in your college environment?', type: 'pills', options: ['Yes I feel safe', 'I experience bullying'], key: 'Q63' },
+            { chapter: 'Your Environment', question: 'Do you work a paid job alongside studies?', type: 'pills', options: ['No', 'Less than 10 hours', '10 to 20 hours', 'More than 20 hours'], key: 'Q64' },
+            { chapter: 'Your Environment', question: 'Is there a language difference between home and class?', type: 'yesno', key: 'Q65' },
+            { chapter: 'Your Environment', question: 'Have you moved schools or relocated often?', type: 'yesno', key: 'Q66' },
+            { chapter: 'Your Environment', question: 'Do teachers explain things in a way that makes sense?', type: 'yesno', key: 'Q67' },
+            { chapter: 'Your Environment', question: 'Do you have someone you can talk to when things get difficult?', type: 'yesno', key: 'Q68' },
+            { chapter: 'Your Screen and Phone Habits', question: 'How many hours daily do you spend on your phone?', type: 'pills', options: ['Under 1 hour', '1 to 2', '2 to 4', '4 to 6', 'More than 6'], key: 'Q69' },
+            { chapter: 'Your Screen and Phone Habits', question: 'Do you reach for your phone when trying to study?', type: 'yesno', key: 'Q70' },
+            { chapter: 'Your Screen and Phone Habits', question: 'Do notifications interrupt your concentration?', type: 'yesno', key: 'Q71' },
+            { chapter: 'Your Screen and Phone Habits', question: 'Do you play video games? If yes, for how long daily?', type: 'pills', options: ['No', 'Less than 1 hour', '1 to 3 hours', 'More than 3 hours late night'], key: 'Q72' },
+            { chapter: 'Your Screen and Phone Habits', question: 'Do you scroll social media even when it makes you feel worse?', type: 'yesno', key: 'Q73' },
+            { chapter: 'Your Screen and Phone Habits', question: 'Do you use screens heavily after 10pm?', type: 'yesno', key: 'Q74' },
+            { chapter: 'Your Screen and Phone Habits', question: 'Has your ability to focus on long tasks gotten shorter?', type: 'yesno', key: 'Q75' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Have you experienced a major life change recently?', type: 'yesno', key: 'Q76' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Do you feel interested in your studies or wrong fit?', type: 'pills', options: ['Genuinely interested', 'Feels like wrong fit'], key: 'Q77' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Do you feel burnt out?', type: 'yesno', key: 'Q78' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Do you feel like you don\'t belong here?', type: 'yesno', key: 'Q79' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Do you feel like you don\'t deserve to be here?', type: 'yesno', key: 'Q80' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Does fear of failure stop you from trying?', type: 'yesno', key: 'Q81' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'Do you find your coursework too slow or unchallenging?', type: 'yesno', key: 'Q82' },
+            { chapter: 'How You\'re Feeling Right Now', question: 'If you had complete freedom, what would you pursue?', type: 'textarea', key: 'Q83' }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initParticleBackground({ mode: 'ambient', particleCount: 800 });
+            renderAcademicQuestion();
+            setupTeacherDashboard();
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        function initParticleBackground(config) {
+            // Particles.js will be loaded from CDN
+            if (window.initParticleBackground) {
+                window.initParticleBackground(config);
+            }
+        }
+
+        function startAssessment() {
+            showPage('assessment-page');
+            renderAcademicQuestion();
+        }
+
+        function startWellbeing() {
+            showPage('wellbeing-page');
+            renderWellbeingQuestion();
+        }
+
+        function goToTeacher() {
+            showPage('teacher-page');
+            setupTeacherDashboard();
+        }
+
+        function goHome() {
+            showPage('landing-page');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        function renderAcademicQuestion() {
+            const q = academicQuestions[state.currentAcademicScreen];
+            const container = document.getElementById('questContainer');
+            const progressPercent = ((state.currentAcademicScreen) / academicQuestions.length) * 100;
+            
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('prevBtn').style.display = state.currentAcademicScreen > 0 ? 'block' : 'none';
+            document.getElementById('nextBtn').textContent = state.currentAcademicScreen === academicQuestions.length - 1 ? 'SUBMIT ASSESSMENT' : 'NEXT →';
+
+            let html = `
+                <div class="chapter-label">${q.chapter}</div>
+                <div class="question-text">${q.question}</div>
+                <div class="question-hint">${q.hint || ''}</div>
+                <div id="inputArea" style="margin-top: 2rem;"></div>
+            `;
+
+            container.innerHTML = html;
+
+            const inputArea = document.getElementById('inputArea');
+            const key = q.key;
+
+            if (q.type === 'text') {
+                inputArea.innerHTML = `<input type="text" id="answerInput" class="form-input" style="width: 80%; max-width: 400px; font-size: 1rem;">`;
+                document.getElementById('answerInput').value = state.academicAnswers[key] || '';
+                document.getElementById('answerInput').focus();
+                document.getElementById('answerInput').onkeyup = (e) => {
+                    state.academicAnswers[key] = e.target.value;
+                    if (key === 'name') state.studentName = e.target.value;
+                    if (key === 'uid') state.studentUID = e.target.value;
+                };
+            } else if (q.type === 'number') {
+                inputArea.innerHTML = `<input type="number" id="answerInput" class="form-input" min="${q.min}" max="${q.max}" style="width: 150px; font-size: 1.2rem; text-align: center;">`;
+                document.getElementById('answerInput').value = state.academicAnswers[key] || '';
+                document.getElementById('answerInput').onchange = (e) => {
+                    state.academicAnswers[key] = parseInt(e.target.value);
+                    state.academicData[key] = parseInt(e.target.value);
+                };
+            } else if (q.type === 'range') {
+                const val = state.academicAnswers[key] || q.min;
+                inputArea.innerHTML = `
+                    <input type="range" id="answerInput" class="form-input" min="${q.min}" max="${q.max}" value="${val}" style="width: 80%; max-width: 400px;">
+                    <div class="range-value">${val}</div>
+                `;
+                document.getElementById('answerInput').oninput = (e) => {
+                    state.academicAnswers[key] = parseInt(e.target.value);
+                    state.academicData[key] = parseInt(e.target.value);
+                    container.querySelector('.range-value').textContent = e.target.value;
+                };
+            } else if (q.type === 'pills') {
+                const selected = state.academicAnswers[key];
+                inputArea.innerHTML = `<div class="pill-group">${q.options.map(opt => `
+                    <button class="pill-btn ${selected === opt ? 'active' : ''}" onclick="selectPill('academic', '${key}', '${opt}', event)">${opt}</button>
+                `).join('')}</div>`;
+            } else if (q.type === 'stepper') {
+                const val = state.academicAnswers[key] || 0;
+                inputArea.innerHTML = `
+                    <div class="stepper-control">
+                        <button class="stepper-btn" onclick="adjustStepper('academic', '${key}', -1)">−</button>
+                        <div class="stepper-value">${val}</div>
+                        <button class="stepper-btn" onclick="adjustStepper('academic', '${key}', 1)">+</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderWellbeingQuestion() {
+            const q = wellbeingQuestions[state.currentWellbeingScreen];
+            const container = document.getElementById('wellbeingContainer');
+            const progressPercent = ((state.currentWellbeingScreen) / wellbeingQuestions.length) * 100;
+            
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('wellbeingPrevBtn').style.display = state.currentWellbeingScreen > 0 ? 'block' : 'none';
+            document.getElementById('wellbeingNextBtn').textContent = state.currentWellbeingScreen === wellbeingQuestions.length - 1 ? 'SUBMIT & GET REPORT' : 'NEXT →';
+
+            let html = `
+                <div class="chapter-label">${q.chapter}</div>
+                <div class="question-text">${q.question}</div>
+                <div id="inputArea" style="margin-top: 2rem;"></div>
+            `;
+
+            container.innerHTML = html;
+
+            const inputArea = document.getElementById('inputArea');
+            const key = q.key;
+
+            if (q.type === 'yesno') {
+                const selected = state.wellbeingAnswers[key];
+                inputArea.innerHTML = `<div class="pill-group">
+                    <button class="pill-btn ${selected === true ? 'active' : ''}" onclick="selectWellbeingPill('${key}', true)">Yes</button>
+                    <button class="pill-btn ${selected === false ? 'active' : ''}" onclick="selectWellbeingPill('${key}', false)">No</button>
+                </div>`;
+            } else if (q.type === 'pills') {
+                const selected = state.wellbeingAnswers[key];
+                inputArea.innerHTML = `<div class="pill-group">${q.options.map(opt => `
+                    <button class="pill-btn ${selected === opt ? 'active' : ''}" onclick="selectWellbeingPill('${key}', '${opt}')">${opt}</button>
+                `).join('')}</div>`;
+            } else if (q.type === 'textarea') {
+                const val = state.wellbeingAnswers[key] || '';
+                inputArea.innerHTML = `<textarea id="textareaInput" class="form-textarea" style="width: 80%; max-width: 500px;">${val}</textarea>`;
+                document.getElementById('textareaInput').onchange = (e) => {
+                    state.wellbeingAnswers[key] = e.target.value;
+                };
+            }
+        }
+
+        function nextQuestion() {
+            if (state.currentAcademicScreen < academicQuestions.length - 1) {
+                state.currentAcademicScreen++;
+                renderAcademicQuestion();
+                state.totalAcademicPoints += 50;
+                document.getElementById('xpCounter').textContent = `Points earned: ${state.totalAcademicPoints}`;
+            } else {
+                submitAssessment();
+            }
+        }
+
+        function previousQuestion() {
+            if (state.currentAcademicScreen > 0) {
+                state.currentAcademicScreen--;
+                renderAcademicQuestion();
+            }
+        }
+
+        function nextWellbeingQuestion() {
+            if (state.currentWellbeingScreen < wellbeingQuestions.length - 1) {
+                state.currentWellbeingScreen++;
+                renderWellbeingQuestion();
+                state.totalAcademicPoints += 25;
+                document.getElementById('xpCounter').textContent = `Points earned: ${state.totalAcademicPoints}`;
+            } else {
+                submitWellbeing();
+            }
+        }
+
+        function previousWellbeingQuestion() {
+            if (state.currentWellbeingScreen > 0) {
+                state.currentWellbeingScreen--;
+                renderWellbeingQuestion();
+            }
+        }
+
+        function selectPill(type, key, value, event) {
+            if (type === 'academic') {
+                // Convert option labels to their stored values
+                let storedValue = value;
+                if (value === 'Male' || value === 'Female' || value === 'Other') storedValue = value;
+                if (value === 'Urban area') storedValue = 'Urban';
+                if (value === 'Rural area') storedValue = 'Rural';
+                if (value === 'Yes' || value === 'No') storedValue = value;
+                
+                state.academicAnswers[key] = storedValue;
+                state.academicData[key] = storedValue;
+                renderAcademicQuestion();
+            }
+        }
+
+        function selectWellbeingPill(key, value) {
+            state.wellbeingAnswers[key] = value;
+            renderWellbeingQuestion();
+        }
+
+        function adjustStepper(type, key, delta) {
+            const current = state.academicAnswers[key] || 0;
+            const q = academicQuestions.find(q => q.key === key);
+            let newVal = current + delta;
+            newVal = Math.max(q.min, Math.min(q.max, newVal));
+            state.academicAnswers[key] = newVal;
+            state.academicData[key] = newVal;
+            renderAcademicQuestion();
+        }
+
+        function submitAssessment() {
+            // Prepare data for API
+            const predictionData = {
+                student_name: state.studentName || 'Student',
+                student_uid: state.studentUID || Date.now().toString(),
+                student_contact: state.academicAnswers.contact || '',
+                Age: state.academicData.Age || 20,
+                Gender: state.academicData.Gender || 'Male',
+                AddressType: state.academicData.AddressType || 'Urban',
+                G1_Score: state.academicData.G1_Score || 50,
+                PastFailures: state.academicData.PastFailures || 0,
+                StudyTime: state.academicData.StudyTime || 2,
+                Absences: state.academicData.Absences || 0,
+                GoOut: state.academicData.GoOut || 3,
+                Dalc: state.academicData.Dalc || 1,
+                Walc: state.academicData.Walc || 1,
+                FreeTime: state.academicData.FreeTime || 3,
+                SchoolSup: state.academicData.SchoolSup || 'No',
+                FamSup: state.academicData.FamSup || 'No',
+                Internet: state.academicData.Internet || 'Yes',
+                HigherEd: state.academicData.HigherEd || 'Yes'
+            };
+
+            fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(predictionData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                state.academicData = data.academic_data;
+                state.riskScore = data.risk_score;
+                state.predictionLabel = data.prediction_label;
+                showAssessmentResults(data);
+            })
+            .catch(err => alert('Error: ' + err));
+        }
+
+        function submitWellbeing() {
+            const wellbeingData = {
+                student_name: state.studentName,
+                student_uid: state.studentUID,
+                responses: state.wellbeingAnswers,
+                share_with_teacher: false
+            };
+
+            fetch('/api/wellbeing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(wellbeingData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                state.wellbeingFlags = data.diagnostic_flags;
+                getFullReport(data);
+            })
+            .catch(err => alert('Error: ' + err));
+        }
+
+        function showAssessmentResults(data) {
+            showPage('results-page');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            const radarCtx = document.createElement('canvas');
+            const container = document.createElement('div');
+            container.appendChild(radarCtx);
+            resultsContent.appendChild(container);
+
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Academic Performance', 'Attendance', 'Study Habits', 'Behavioral Risk', 'Social Activity', 'Support Systems'],
+                    datasets: [{
+                        label: 'Your Profile',
+                        data: [
+                            Math.min(data.academic_data.G1_Score / 100 * 100, 100),
+                            Math.max(100 - (data.academic_data.Absences / 30 * 100), 0),
+                            (data.academic_data.StudyTime / 10 * 100),
+                            (data.risk_score * 100),
+                            (data.academic_data.GoOut / 5 * 100),
+                            (data.academic_data.SchoolSup === 'Yes' ? 100 : data.academic_data.FamSup === 'Yes' ? 80 : 40)
+                        ],
+                        borderColor: '#c4956a',
+                        backgroundColor: 'rgba(196, 149, 106, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255, 220, 170, 0.1)' },
+                            ticks: { color: 'rgba(240, 230, 211, 0.6)' }
+                        }
+                    }
+                }
+            });
+
+            const badge = document.createElement('div');
+            badge.style.textAlign = 'center';
+            badge.style.marginTop = '30px';
+            
+            if (data.prediction_label === 'AT RISK') {
+                badge.innerHTML = `
+                    <div class="risk-badge at-risk" style="font-size: 1.2rem; padding: 10px 20px; display: inline-block; margin-bottom: 15px;">AT RISK</div>
+                    <p style="color: var(--text-secondary); max-width: 600px; margin: 15px auto;">Based on your responses, you may benefit from additional academic support. Kachua is here to help connect you with resources.</p>
+                `;
+            } else {
+                badge.innerHTML = `
+                    <div class="risk-badge safe" style="font-size: 1.2rem; padding: 10px 20px; display: inline-block; margin-bottom: 15px;">SAFE</div>
+                    <p style="color: var(--text-secondary); max-width: 600px; margin: 15px auto;">You appear to be on a stable academic track. Keep up the excellent work!</p>
+                `;
+            }
+            resultsContent.appendChild(badge);
+        }
+
+        function getFullReport(wellbeingData) {
+            const geminiData = {
+                student_name: state.studentName,
+                risk_score: state.riskScore,
+                prediction_label: state.predictionLabel,
+                diagnostic_flags: state.wellbeingFlags,
+                academic_data: state.academicData,
+                wellbeing_answers: state.wellbeingAnswers
+            };
+
+            fetch('/api/gemini_advice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(geminiData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                window.location.href = '/result/' + data.session_id;
+            })
+            .catch(err => alert('Error getting report: ' + err));
+        }
+
+        function setupTeacherDashboard() {
+            fetchStudents();
+        }
+
+        function fetchStudents() {
+            fetch('/api/students')
+            .then(res => res.json())
+            .then(students => {
+                const grid = document.getElementById('studentsGrid');
+                grid.innerHTML = students.map(s => `
+                    <div class="glass-card student-card ${s.prediction_label === 'AT RISK' ? 'at-risk' : ''}">
+                        <div style="font-weight: 700; margin-bottom: 10px;">${s.name}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">ID: ${s.uid.substring(0, 8)}...</div>
+                        <div style="font-size: 1.5rem; color: var(--accent-gold); margin-bottom: 10px; font-family: var(--font-display);">${(s.risk_score * 100).toFixed(0)}%</div>
+                        <div class="risk-badge ${s.prediction_label === 'AT RISK' ? 'at-risk' : 'safe'}">${s.prediction_label}</div>
+                    </div>
+                `).join('');
+
+                // Update stats
+                const atRisk = students.filter(s => s.prediction_label === 'AT RISK').length;
+                const safe = students.filter(s => s.prediction_label === 'SAFE').length;
+                const avgRisk = students.length > 0 ? (students.reduce((sum, s) => sum + s.risk_score, 0) / students.length * 100).toFixed(1) : 0;
+
+                document.getElementById('totalStudents').textContent = students.length;
+                document.getElementById('atRiskCount').textContent = atRisk;
+                document.getElementById('safeCount').textContent = safe;
+                document.getElementById('avgRisk').textContent = avgRisk + '%';
+            });
+        }
+
+        function analyzeBulkFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.textContent = 'ANALYZING...';
+            analyzeBtn.disabled = true;
+
+            fetch('/api/bulk_analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('analysisResults');
+                resultsDiv.innerHTML = `
+                    <div class="glass-card" style="padding: 2rem;">
+                        <h3 style="font-family: var(--font-display); color: var(--accent-gold); margin-bottom: 20px;">Analysis Results</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <div><div style="color: var(--text-secondary); font-size: 0.9rem;">Total Students</div><div style="font-size: 1.8rem; color: var(--accent-gold);">${data.total_students}</div></div>
+                            <div><div style="color: var(--text-secondary); font-size: 0.9rem;">At-Risk</div><div style="font-size: 1.8rem; color: var(--accent-danger);">${data.at_risk_count}</div></div>
+                            <div><div style="color: var(--text-secondary); font-size: 0.9rem;">Safe</div><div style="font-size: 1.8rem; color: var(--accent-secondary);">${data.safe_count}</div></div>
+                            <div><div style="color: var(--text-secondary); font-size: 0.9rem;">At-Risk %</div><div style="font-size: 1.8rem; color: var(--accent-gold);">${data.at_risk_percentage.toFixed(1)}%</div></div>
+                        </div>
+                    </div>
+                `;
+                analyzeBtn.textContent = 'RUN ANALYSIS';
+                analyzeBtn.disabled = false;
+                fileInput.value = '';
+                fetchStudents();
+            })
+            .catch(err => {
+                alert('Error: ' + err);
+                analyzeBtn.textContent = 'RUN ANALYSIS';
+                analyzeBtn.disabled = false;
+            });
+        }
+
+        document.getElementById('uploadZone').addEventListener('click', () => document.getElementById('fileInput').click());
+        document.getElementById('fileInput').addEventListener('change', function() {
+            if (this.files.length > 0) {
+                document.getElementById('analyzeBtn').style.display = 'block';
+            }
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const clockEl = document.getElementById('clock');
+            if (clockEl) clockEl.textContent = timeStr;
+        }
+    </script>
+</body>
+</html>
