@@ -15,7 +15,13 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'kachua_secret_2024')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///kachua.db'
+
+if os.environ.get('VERCEL'):
+    db_path = '/tmp/kachua.db'
+else:
+    db_path = 'kachua.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -29,10 +35,11 @@ feature_names = []
 def load_ml_assets():
     global rf_model, encoders, feature_importances, feature_names
     try:
-        rf_model = joblib.load('models/rf_model.pkl')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        rf_model = joblib.load(os.path.join(base_dir, 'models', 'rf_model.pkl'))
         categorical_cols = ['Gender', 'AddressType', 'SchoolSup', 'FamSup', 'Internet', 'HigherEd']
         for col in categorical_cols:
-            encoders[col] = joblib.load(f'models/encoder_{col}.pkl')
+            encoders[col] = joblib.load(os.path.join(base_dir, 'models', f'encoder_{col}.pkl'))
             
         importances = rf_model.feature_importances_
         # Expected feature order based on train_model.py
